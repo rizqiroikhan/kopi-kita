@@ -1,16 +1,39 @@
 import 'dotenv/config';
 import express, { Request, Response } from 'express';
+import cors from 'cors';
 import { pool } from './db';
 
 const app = express();
 const port = Number(process.env.API_PORT ?? 4000);
 const categories = ['kopi', 'non-kopi', 'pastry'] as const;
 const statuses = ['pending', 'confirmed', 'done', 'cancelled'] as const;
+const adminToken = process.env.ADMIN_TOKEN;
 
 app.use(express.json());
+app.use(cors({ origin: ['http://localhost:3000', 'http://127.0.0.1:3000'] }));
 
 const bad = (res: Response, message: string) => res.status(400).json({ error: message });
-const parseId = (value: string) => /^\d+$/.test(value) ? Number(value) : null;
+const parseId = (value: string | string[]) => typeof value === 'string' && /^\d+$/.test(value) ? Number(value) : null;
+
+const requireAdmin = (req: Request, res: Response, next: () => void) => {
+  const authorization = req.header('authorization');
+  const token = authorization?.startsWith('Bearer ') ? authorization.slice(7) : undefined;
+  if (!adminToken || !token || token !== adminToken) {
+    res.status(401).json({ error: 'Unauthorized' });
+    return;
+  }
+  next();
+};
+
+app.post('/api/admin/login', async (req, res) => {
+  const { email, password } = req.body ?? {};
+  if (!email || !password) return bad(res, 'Email and password are required');
+  try {
+    const result = await pool.query('SELECT id FROM admins WHERE email = $1 AND password_hash = crypt($2, password_hash)', [email, password]);
+    if (!result.rowCount) return res.status(401).json({ error: 'Invalid credentials' });
+    res.json({ token: adminToken });
+  } catch { res.status(500).json({ error: 'Login failed' }); }
+});
 
 app.get('/api/products', async (req, res) => {
   try {
@@ -21,7 +44,7 @@ app.get('/api/products', async (req, res) => {
   } catch { res.status(500).json({ error: 'Failed to fetch products' }); }
 });
 
-app.post('/api/products', async (req, res) => {
+app.post('/api/products', requireAdmin, async (req, res) => {
   const { name, description, price, category, image_url, available = true } = req.body ?? {};
   if (!name || !description || !Number.isInteger(price) || !categories.includes(category) || typeof image_url !== 'string' || typeof available !== 'boolean') return bad(res, 'Invalid product data');
   try {
@@ -30,7 +53,7 @@ app.post('/api/products', async (req, res) => {
   } catch { res.status(500).json({ error: 'Failed to create product' }); }
 });
 
-app.put('/api/products/:id', async (req, res) => {
+app.put('/api/products/:id', requireAdmin, async (req, res) => {
   const id = parseId(req.params.id); const { name, description, price, category, image_url, available } = req.body ?? {};
   if (!id) return bad(res, 'Invalid product id');
   if (!name || !description || !Number.isInteger(price) || !categories.includes(category) || typeof image_url !== 'string' || typeof available !== 'boolean') return bad(res, 'Invalid product data');
@@ -41,7 +64,7 @@ app.put('/api/products/:id', async (req, res) => {
   } catch { res.status(500).json({ error: 'Failed to update product' }); }
 });
 
-app.delete('/api/products/:id', async (req, res) => {
+app.delete('/api/products/:id', requireAdmin, async (req, res) => {
   const id = parseId(req.params.id); if (!id) return bad(res, 'Invalid product id');
   try { const result = await pool.query('DELETE FROM products WHERE id=$1 RETURNING id', [id]); if (!result.rowCount) return res.status(404).json({ error: 'Product not found' }); res.status(204).send(); }
   catch { res.status(500).json({ error: 'Failed to delete product' }); }
@@ -57,12 +80,12 @@ app.post('/api/bookings', async (req, res) => {
   catch { res.status(500).json({ error: 'Failed to create booking' }); }
 });
 
-app.get('/api/bookings', async (_req, res) => {
+app.get('/api/bookings', requireAdmin, async (_req, res) => {
   try { const result = await pool.query('SELECT * FROM bookings ORDER BY booking_date ASC, booking_time ASC'); res.json(result.rows); }
   catch { res.status(500).json({ error: 'Failed to fetch bookings' }); }
 });
 
-app.patch('/api/bookings/:id', async (req, res) => {
+app.patch('/api/bookings/:id', requireAdmin, async (req, res) => {
   const id = parseId(req.params.id); const { status } = req.body ?? {};
   if (!id || !statuses.includes(status)) return bad(res, 'Invalid booking id or status');
   try { const result = await pool.query('UPDATE bookings SET status=$1 WHERE id=$2 RETURNING *', [status, id]); if (!result.rowCount) return res.status(404).json({ error: 'Booking not found' }); res.json(result.rows[0]); }
