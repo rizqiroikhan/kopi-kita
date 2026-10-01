@@ -1,69 +1,41 @@
-import Image from "next/image";
+import Link from "next/link";
+
+const favorites = [
+  { name: "Cloudy Oat Latte", description: "Silky espresso, oat milk, brown sugar, and a little sea salt.", price: "Rp38.000", tone: "bg-[#e8c9a5]", icon: "latte" },
+  { name: "Strawberry Matcha", description: "Ceremonial matcha layered over house strawberry milk.", price: "Rp39.000", tone: "bg-[#e8b9aa]", icon: "matcha" },
+  { name: "Butter Croissant", description: "Golden, flaky, and baked for slow mornings.", price: "Rp28.000", tone: "bg-[#e8c887]", icon: "pastry" },
+] as const;
+
+function ProductArt({ type }: { type: (typeof favorites)[number]["icon"] }) {
+  if (type === "pastry") return <span className="relative h-14 w-24 rotate-[-8deg] rounded-[100%] border-[9px] border-[#a76638] bg-[#efc56e] shadow-[0_12px_14px_rgba(93,51,26,0.18)]" />;
+  return <span className={`relative h-24 w-20 rounded-b-[2rem] rounded-t-lg border-[5px] border-[#fff6e8]/80 shadow-[0_12px_14px_rgba(93,51,26,0.18)] ${type === "matcha" ? "bg-[#8eaf7a]" : "bg-[#9c6748]"}`} />;
+}
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className="bg-[#FAF3E0]">
+      <section className="mx-auto grid h-auto max-w-7xl gap-10 overflow-visible px-5 pb-16 pt-12 sm:px-8 sm:pb-20 sm:pt-16 lg:grid-cols-[0.94fr_1.06fr] lg:items-center lg:gap-16 lg:px-10 lg:py-24">
+        <div className="relative z-10 min-w-0 max-w-xl">
+          <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#d86f3d]/25 bg-[#f7dfc5] px-3 py-1.5 text-xs font-extrabold uppercase tracking-[0.14em] text-[#a94d2d]"><span className="size-1.5 rounded-full bg-[#d86f3d]" />Your new slow spot</p>
+          <h1 className="text-5xl font-black leading-[0.91] tracking-[-0.075em] text-[#4A2C2A] sm:text-6xl lg:text-7xl">Coffee for your<span className="block text-[#d86f3d]">good days.</span></h1>
+          <p className="mt-6 max-w-md text-base leading-7 text-[#765444] sm:text-lg">Thoughtful cups, soft pastries, and a corner of the city made for lingering a little longer.</p>
+          <div className="mt-6 flex w-full flex-col gap-3 md:mt-7 md:w-auto md:flex-row" aria-label="Hero actions">
+            <Link href="/menu" className="inline-flex min-h-14 w-full items-center justify-center rounded-full bg-[#4A2C2A] px-7 text-base font-extrabold text-[#fffaf2] shadow-[0_12px_24px_rgba(74,44,42,0.25)] ring-1 ring-[#4A2C2A] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#653a36] hover:shadow-[0_16px_28px_rgba(74,44,42,0.3)] active:translate-y-0 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#d86f3d] md:w-auto">
+              See Menu <span aria-hidden="true" className="ml-2">→</span>
+            </Link>
+            <Link href="/booking" className="inline-flex min-h-14 w-full items-center justify-center rounded-full border-2 border-[#4A2C2A] bg-[#fffaf2] px-7 text-base font-extrabold text-[#4A2C2A] shadow-[0_8px_18px_rgba(74,44,42,0.12)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#d86f3d] hover:text-[#a94d2d] active:translate-y-0 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#d86f3d] md:w-auto">
+              Book a Table
+            </Link>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+        <div className="relative min-w-0 aspect-[1.05] overflow-visible rounded-[2rem] bg-[#c9885b] shadow-[0_24px_55px_rgba(94,54,31,0.2)] md:min-h-[31rem] md:aspect-auto md:overflow-hidden" role="img" aria-label="Warm illustrated cafe scene with coffee cup, window light, and leafy plant"><span className="absolute inset-x-0 top-0 h-[48%] bg-[#f4c892]" /><span className="absolute right-[13%] top-0 h-[58%] w-[34%] rounded-b-[5rem] border-x-[13px] border-b-[13px] border-[#fff2d7]/75 bg-[#d59a64]" /><span className="absolute bottom-0 left-0 h-[48%] w-full bg-[#a56142]" /><span className="absolute bottom-[17%] left-[12%] h-[7%] w-[54%] rounded-full bg-[#70402c] shadow-[0_14px_0_9px_#875139]" /><span className="absolute bottom-[23%] left-[28%] h-[35%] w-[25%] rounded-b-[42%] rounded-t-[22%] border-[9px] border-[#fff4dc] bg-[#9e593d] shadow-[0_17px_15px_rgba(71,37,25,0.22)]" /><span className="absolute bottom-[50%] left-[34%] size-[14%] rounded-full border-[4px] border-[#fff4dc]/90 bg-[#d6a370]" /><span className="absolute bottom-[31%] left-[14%] h-[27%] w-[13%] rounded-t-[3rem] bg-[#4f754d]" /><div className="absolute bottom-5 right-5 rounded-2xl bg-[#fffaf2]/90 px-4 py-3 text-xs font-bold leading-5 text-[#4A2C2A] shadow-lg backdrop-blur-sm">08.00 — 22.00<br /><span className="text-[#a94d2d]">every day, take it slow</span></div></div>
+      </section>
+
+      <section className="border-y border-[#4A2C2A]/8 bg-[#fffaf2] py-16 sm:py-20"><div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10"><div className="mb-8 flex flex-col gap-3 sm:mb-10 sm:flex-row sm:items-end sm:justify-between"><div><p className="text-xs font-extrabold uppercase tracking-[0.16em] text-[#d86f3d]">People keep coming back for</p><h2 className="mt-2 text-3xl font-black tracking-[-0.06em] sm:text-4xl">Fan Favorites</h2></div><Link href="/menu" className="w-fit text-sm font-extrabold underline decoration-[#d86f3d] decoration-2 underline-offset-4 transition-colors hover:text-[#d86f3d]">See the full menu</Link></div><div className="grid gap-4 sm:grid-cols-3 sm:gap-5">{favorites.map((item) => <article key={item.name} className="group overflow-hidden rounded-[1.5rem] border border-[#4A2C2A]/8 bg-white shadow-[0_8px_24px_rgba(82,48,28,0.07)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_32px_rgba(82,48,28,0.13)]"><div role="img" aria-label={`Illustration of ${item.name}`} className={`relative grid aspect-[1.65] place-items-center overflow-hidden ${item.tone}`}><span className="absolute -right-6 -top-8 size-28 rounded-full border-[18px] border-white/25" /><ProductArt type={item.icon} /></div><div className="p-5"><div className="flex items-start justify-between gap-3"><h3 className="text-lg font-black tracking-[-0.04em]">{item.name}</h3><span className="shrink-0 text-sm font-extrabold text-[#a94d2d]">{item.price}</span></div><p className="mt-2 text-sm leading-6 text-[#765444]">{item.description}</p></div></article>)}</div></div></section>
+
+      <section className="mx-auto grid max-w-7xl gap-6 px-5 py-16 sm:px-8 sm:py-20 lg:grid-cols-[0.9fr_1.1fr] lg:gap-12 lg:px-10"><div className="rounded-[1.75rem] bg-[#4A2C2A] p-7 text-[#fffaf2] shadow-[0_18px_35px_rgba(74,44,42,0.18)] sm:p-9"><p className="text-xs font-extrabold uppercase tracking-[0.16em] text-[#f1b37f]">Come say hi</p><h2 className="mt-3 text-3xl font-black tracking-[-0.055em] sm:text-4xl">Your table is waiting.</h2><dl className="mt-9 space-y-6 text-sm leading-6"><div><dt className="font-extrabold text-[#f1b37f]">Opening hours</dt><dd className="mt-1">Every day · 08.00 — 22.00 WIB</dd></div><div><dt className="font-extrabold text-[#f1b37f]">Find us</dt><dd className="mt-1">Jl. Kemang Raya No. 18<br />Jakarta Selatan, 12730</dd></div></dl><Link href="/booking" className="mt-9 inline-flex min-h-11 items-center rounded-full bg-[#f1b37f] px-5 text-sm font-extrabold text-[#4A2C2A] transition-transform hover:scale-[1.02] active:scale-[0.98]">Reserve a table</Link></div><div role="img" aria-label="Map placeholder showing Kopi Kita in Kemang, Jakarta Selatan" className="relative min-h-80 overflow-hidden rounded-[1.75rem] border border-[#4A2C2A]/10 bg-[#e7d2ae] shadow-[0_12px_30px_rgba(82,48,28,0.08)]"><span className="absolute -left-8 top-12 h-14 w-[80%] rotate-[-10deg] rounded-full border-[14px] border-[#fbf2de]" /><span className="absolute -right-8 bottom-16 h-16 w-[85%] rotate-[16deg] rounded-full border-[15px] border-[#fbf2de]" /><span className="absolute left-[46%] top-0 h-full w-12 rotate-[25deg] border-x-[10px] border-[#fbf2de]" /><span className="absolute left-[55%] top-[43%] grid size-14 place-items-center rounded-full bg-[#d86f3d] text-xs font-black text-white shadow-[0_8px_15px_rgba(169,77,45,0.3)]">KK</span><div className="absolute bottom-5 left-5 rounded-xl bg-[#fffaf2]/95 px-4 py-3 text-sm font-extrabold shadow-lg">Kopi Kita<br /><span className="text-xs font-medium text-[#765444]">Kemang, Jakarta Selatan</span></div></div></section>
+
+      <footer className="border-t border-[#4A2C2A]/10 bg-[#f2e4cf]"><div className="mx-auto grid max-w-7xl gap-8 px-5 py-10 text-sm sm:grid-cols-3 sm:px-8 lg:px-10"><div><p className="text-lg font-black tracking-[-0.06em]">Kopi Kita</p><p className="mt-2 leading-6 text-[#765444]">Jl. Kemang Raya No. 18<br />Jakarta Selatan, 12730</p></div><div><p className="font-extrabold">Opening hours</p><p className="mt-2 leading-6 text-[#765444]">Every day<br />08.00 — 22.00 WIB</p></div><div><p className="font-extrabold">Keep in touch</p><div className="mt-2 flex gap-4 font-bold text-[#765444]"><a href="https://instagram.com" className="transition-colors hover:text-[#d86f3d]">Instagram</a><a href="https://tiktok.com" className="transition-colors hover:text-[#d86f3d]">TikTok</a></div></div></div></footer>
+    </main>
   );
 }
