@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 440" role="img" aria-label="Coffee placeholder">
+  <rect width="480" height="440" fill="#c9966b"/>
+  <circle cx="390" cy="55" r="88" fill="#f6dfbf" fill-opacity=".45"/>
+  <rect x="165" y="126" width="150" height="190" rx="42" fill="#8e593d" stroke="#fff4dc" stroke-width="14"/>
+  <circle cx="240" cy="175" r="43" fill="#d6a370" stroke="#fff4dc" stroke-width="10"/>
+  <path d="M315 175h35c33 0 33 63 0 63h-35" fill="none" stroke="#fff4dc" stroke-width="14" stroke-linecap="round"/>
+</svg>

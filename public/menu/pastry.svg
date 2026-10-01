@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 440" role="img" aria-label="Pastry placeholder">
+  <rect width="480" height="440" fill="#e9c887"/>
+  <circle cx="390" cy="55" r="88" fill="#fff4dc" fill-opacity=".5"/>
+  <path d="M125 258c0-87 69-122 115-62 46-60 115-25 115 62 0 37-28 67-63 67h-104c-35 0-63-30-63-67z" fill="#efc56e" stroke="#a76638" stroke-width="18"/>
+  <path d="M190 198c28 11 48 35 50 70M290 198c-28 11-48 35-50 70" fill="none" stroke="#a76638" stroke-width="13" stroke-linecap="round"/>
+</svg>

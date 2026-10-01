@@ -1,84 +1,50 @@
-export const menuCategories = ["All", "Coffee", "Non-Coffee", "Pastry"] as const;
+export type MenuItem = {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  category: "kopi" | "non-kopi" | "pastry";
+  image: string;
+  available: boolean;
+};
 
+export const menuItems: MenuItem[] = [
+  { id: 1, name: "Kopi Susu Kita", description: "Espresso lembut dengan susu segar dan gula aren khas Kopi Kita.", price: 28000, category: "kopi", image: "/menu/coffee.svg", available: true },
+  { id: 2, name: "Americano", description: "Espresso bersih dan bold untuk menemani hari yang penuh fokus.", price: 24000, category: "kopi", image: "/menu/coffee.svg", available: true },
+  { id: 3, name: "Es Kopi Gula Aren", description: "Kopi susu dingin dengan manis gula aren yang hangat dan familiar.", price: 30000, category: "kopi", image: "/menu/coffee.svg", available: true },
+  { id: 4, name: "Matcha Latte", description: "Matcha creamy yang earthy, ringan, dan dibuat untuk slow afternoons.", price: 35000, category: "non-kopi", image: "/menu/non-coffee.svg", available: true },
+  { id: 5, name: "Coklat Panas", description: "Coklat hangat yang rich dan comforting dengan rasa yang tidak terlalu manis.", price: 30000, category: "non-kopi", image: "/menu/non-coffee.svg", available: true },
+  { id: 6, name: "Croissant", description: "Croissant butter yang flaky dan fresh dari oven untuk teman ngopi.", price: 26000, category: "pastry", image: "/menu/pastry.svg", available: true },
+  { id: 7, name: "Roti Bakar Keju", description: "Roti panggang renyah dengan keju lumer yang gurih dan nostalgic.", price: 25000, category: "pastry", image: "/menu/pastry.svg", available: true },
+  { id: 8, name: "Banana Bread", description: "Banana bread moist dengan aroma rempah lembut untuk sore yang santai.", price: 28000, category: "pastry", image: "/menu/pastry.svg", available: false },
+];
+
+// Existing menu-page exports, derived from the source-of-truth data above.
+export const menuCategories = ["All", "Coffee", "Non-Coffee", "Pastry"] as const;
 export type MenuCategory = (typeof menuCategories)[number];
 export type ProductCategory = Exclude<MenuCategory, "All">;
 
-export type MenuProduct = {
-  name: string;
-  category: ProductCategory;
-  description: string;
-  price: number;
-  available: boolean;
-  image: {
-    emoji: string;
-    alt: string;
-    tone: string;
-  };
+const categoryLabels: Record<MenuItem["category"], ProductCategory> = {
+  kopi: "Coffee",
+  "non-kopi": "Non-Coffee",
+  pastry: "Pastry",
 };
 
-export const menuProducts: MenuProduct[] = [
-  {
-    name: "Cloudy Oat Latte",
-    category: "Coffee",
-    description: "Silky espresso with oat milk, brown sugar, and a whisper of sea salt.",
-    price: 38000,
-    available: true,
-    image: { emoji: "☕", alt: "Illustration of a creamy iced oat latte", tone: "bg-[#e8c9a5]" },
+const artwork: Record<MenuItem["category"], { emoji: string; tone: string }> = {
+  kopi: { emoji: "☕", tone: "bg-[#c9966b]" },
+  "non-kopi": { emoji: "🥛", tone: "bg-[#e6b8a5]" },
+  pastry: { emoji: "🥐", tone: "bg-[#e9c887]" },
+};
+
+export const menuProducts = menuItems.map((item) => ({
+  name: item.name,
+  category: categoryLabels[item.category],
+  description: item.description,
+  price: item.price,
+  available: item.available,
+  image: {
+    emoji: artwork[item.category].emoji,
+    alt: `Illustration of ${item.name}`,
+    tone: artwork[item.category].tone,
   },
-  {
-    name: "Kopi Kita Latte",
-    category: "Coffee",
-    description: "Our house espresso made soft and comforting with velvety fresh milk.",
-    price: 32000,
-    available: true,
-    image: { emoji: "🥛", alt: "Illustration of Kopi Kita signature latte", tone: "bg-[#c9966b]" },
-  },
-  {
-    name: "Midnight Mocha",
-    category: "Coffee",
-    description: "Bold espresso, dark chocolate, and a little late-night main-character energy.",
-    price: 40000,
-    available: false,
-    image: { emoji: "🍫", alt: "Illustration of a dark chocolate mocha", tone: "bg-[#a66a4a]" },
-  },
-  {
-    name: "Orange Cold Brew",
-    category: "Coffee",
-    description: "Slow-steeped cold brew brightened with orange peel and a splash of tonic.",
-    price: 42000,
-    available: true,
-    image: { emoji: "🍊", alt: "Illustration of citrus cold brew", tone: "bg-[#efb05a]" },
-  },
-  {
-    name: "Strawberry Matcha",
-    category: "Non-Coffee",
-    description: "Ceremonial matcha layered over house strawberry milk for a berry-green glow.",
-    price: 39000,
-    available: true,
-    image: { emoji: "🍓", alt: "Illustration of strawberry matcha latte", tone: "bg-[#e6b8a5]" },
-  },
-  {
-    name: "Peach Please",
-    category: "Non-Coffee",
-    description: "Sparkling peach tea with jasmine, citrus, and sunny afternoon vibes.",
-    price: 35000,
-    available: true,
-    image: { emoji: "🍑", alt: "Illustration of sparkling peach tea", tone: "bg-[#f2c9a5]" },
-  },
-  {
-    name: "Butter Croissant",
-    category: "Pastry",
-    description: "Golden, flaky, and baked for the kind of morning worth getting up for.",
-    price: 28000,
-    available: true,
-    image: { emoji: "🥐", alt: "Illustration of a golden butter croissant", tone: "bg-[#e9c887]" },
-  },
-  {
-    name: "Choco Sea Salt Cookie",
-    category: "Pastry",
-    description: "A chewy dark chocolate cookie finished with delicate flakes of sea salt.",
-    price: 25000,
-    available: false,
-    image: { emoji: "🍪", alt: "Illustration of a chocolate sea salt cookie", tone: "bg-[#bc8b6d]" },
-  },
-];
+}));
