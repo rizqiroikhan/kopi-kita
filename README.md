@@ -1,40 +1,63 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Kopi Kita
 
-## Getting Started
+Kopi Kita is a warm, modern coffee-shop website with a database-backed menu, booking flow, and protected admin CMS. The public pages help guests discover products and book a table; the CMS lets staff manage products and confirm bookings.
 
-First, run the development server:
+## Features
+
+- Responsive landing page, menu, and booking pages
+- PostgreSQL-backed product catalog and bookings
+- Category filters, unavailable-product states, loading and recovery states
+- Server-side booking validation
+- Protected admin product and booking management
+- Database-backed HttpOnly admin sessions that survive app restarts
+- Same-origin Next.js API routes backed by an embedded Express app
+- Docker Compose for local PostgreSQL
+
+## Tech stack
+
+Next.js 16, React 19, TypeScript, Tailwind CSS, Express, `pg`, PostgreSQL 16, Docker Compose, and Vercel-compatible deployment configuration.
+
+## Local setup
+
+1. Install Node.js 20+ and Docker Desktop.
+2. Copy `.env.example` to `.env` and replace `SESSION_SECRET` with a long random value.
+3. Start PostgreSQL:
+
+   ```bash
+   docker compose up -d
+   ```
+
+4. Apply the schema and seed data:
+
+   ```bash
+   npm run db:reset
+   ```
+
+5. Start the single Next.js application server:
+
+   ```bash
+   npm install
+   npm run dev
+   ```
+
+Open `http://localhost:3000`. The admin login is at `/admin/login`; credentials come from the seeded `admins` row.
+
+## Environment variables
+
+`.env` is local-only and ignored by Git. Use `.env.example` as the template. Required variables are `DATABASE_URL` and `SESSION_SECRET`; use a Neon connection string for production.
+
+## Quality checks
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run lint
+npx tsc --noEmit
+npm run build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Deployment
 
-## Integrated API
+The app is structured for Vercel deployment. Configure `DATABASE_URL` and `SESSION_SECRET` as Vercel environment variables, then deploy the `master` branch. No production URL is claimed in this repository until a deployment is actually provisioned and verified.
 
-The public menu, booking form, and admin CMS now use the same-origin Next.js API at `/api/*`. Start one application server with `npm run dev`; PostgreSQL remains the only separate service and runs through Docker Compose. Admin login is available at `/admin/login`.
+## Screenshots
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Evidence screenshots should be captured from the running app and stored outside source control unless they are intentionally added to a portfolio submission.
