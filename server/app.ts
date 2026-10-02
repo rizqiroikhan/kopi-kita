@@ -1,11 +1,12 @@
 import 'dotenv/config';
 import express, { Request, Response } from 'express';
+import { createHash, randomBytes } from 'node:crypto';
 import { pool } from './db';
 
 const app = express();
 const categories = ['kopi', 'non-kopi', 'pastry'] as const;
 const statuses = ['pending', 'confirmed', 'done', 'cancelled'] as const;
-const adminToken = process.env.ADMIN_TOKEN;
+const sessionSecret = process.env.SESSION_SECRET;
 
 app.use(express.json());
 // serverless-http may mount the catch-all segment without the `/api` prefix.
@@ -13,18 +14,36 @@ app.use(express.json());
 app.use((req, _res, next) => { if (!req.url.startsWith('/api/')) req.url = `/api${req.url}`; next(); });
 const bad = (res: Response, message: string) => res.status(400).json({ error: message });
 const parseId = (value: string | string[]) => typeof value === 'string' && /^\d+$/.test(value) ? Number(value) : null;
-const requireAdmin = (req: Request, res: Response, next: () => void) => {
-  const authorization = req.header('authorization');
-  const token = authorization?.startsWith('Bearer ') ? authorization.slice(7) : undefined;
-  if (!adminToken || !token || token !== adminToken) return res.status(401).json({ error: 'Unauthorized' });
-  next();
+const cookieValue = (req: Request, name: string) => req.header('cookie')?.split(';').map((part) => part.trim()).find((part) => part.startsWith(`${name}=`))?.slice(name.length + 1);
+const sessionId = (token: string) => createHash('sha256').update(`${sessionSecret ?? ''}:${token}`).digest('hex');
+const setSessionCookie = (res: Response, token: string, maxAge: number) => res.setHeader('Set-Cookie', `kopikita_session=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${maxAge}`);
+const requireAdmin = async (req: Request, res: Response, next: () => void) => {
+  const token = cookieValue(req, 'kopikita_session');
+  if (!token || !sessionSecret) return res.status(401).json({ error: 'Unauthorized' });
+  try { const result = await pool.query('SELECT id FROM sessions WHERE id = $1 AND expires_at > CURRENT_TIMESTAMP', [sessionId(token)]); if (!result.rowCount) return res.status(401).json({ error: 'Unauthorized' }); next(); }
+  catch { return res.status(500).json({ error: 'Authentication failed' }); }
 };
 
 app.post('/api/admin/login', async (req, res) => {
   const { email, password } = req.body ?? {};
   if (!email || !password) return bad(res, 'Email and password are required');
-  try { const result = await pool.query('SELECT id FROM admins WHERE email = $1 AND password_hash = crypt($2, password_hash)', [email, password]); if (!result.rowCount) return res.status(401).json({ error: 'Invalid credentials' }); res.json({ token: adminToken }); }
+  try {
+    if (!sessionSecret) return res.status(500).json({ error: 'Session configuration is missing' });
+    const result = await pool.query('SELECT id FROM admins WHERE email = $1 AND password_hash = crypt($2, password_hash)', [email, password]);
+    if (!result.rowCount) return res.status(401).json({ error: 'Invalid credentials' });
+    const token = randomBytes(32).toString('hex');
+    await pool.query('DELETE FROM sessions WHERE expires_at <= CURRENT_TIMESTAMP');
+    await pool.query("INSERT INTO sessions (id, admin_id, expires_at) VALUES ($1, $2, CURRENT_TIMESTAMP + INTERVAL '7 days')", [sessionId(token), result.rows[0].id]);
+    setSessionCookie(res, token, 60 * 60 * 24 * 7);
+    res.json({ ok: true });
+  }
   catch { res.status(500).json({ error: 'Login failed' }); }
+});
+
+app.post('/api/admin/logout', async (req, res) => {
+  const token = cookieValue(req, 'kopikita_session');
+  try { if (token && sessionSecret) await pool.query('DELETE FROM sessions WHERE id = $1', [sessionId(token)]); setSessionCookie(res, '', 0); res.json({ ok: true }); }
+  catch { res.status(500).json({ error: 'Logout failed' }); }
 });
 
 app.get('/api/products', async (req, res) => {
