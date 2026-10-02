@@ -56,7 +56,7 @@ npm run build
 
 ## Deployment
 
-The app is structured for Vercel deployment. Configure `DATABASE_URL` and `SESSION_SECRET` as Vercel environment variables, then deploy the `master` branch. No production URL is claimed in this repository until a deployment is actually provisioned and verified.
+The production app is live at [kopi-kita-rust.vercel.app](https://kopi-kita-rust.vercel.app). Configure `DATABASE_URL` and `SESSION_SECRET` as Vercel Secrets, then deploy the `master` branch.
 
 ## Screenshots
 
