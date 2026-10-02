@@ -4,23 +4,22 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "dev:api": "tsx watch api/server.ts",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:reset": "powershell -ExecutionPolicy Bypass -File api/db/apply-schema.ps1"
   },
   "dependencies": {
-    "cors": "^2.8.6",
     "dotenv": "^18.0.5",
     "express": "^5.2.1",
     "next": "16.3.7",
     "pg": "^8.23.1",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "serverless-http": "^4.0.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
-    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/node": "^20",
     "@types/pg": "^8.23.1",
