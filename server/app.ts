@@ -7,6 +7,9 @@ const app = express();
 const categories = ['kopi', 'non-kopi', 'pastry'] as const;
 const statuses = ['pending', 'confirmed', 'done', 'cancelled'] as const;
 const sessionSecret = process.env.SESSION_SECRET;
+const loginFailures = new Map<string, { count: number; resetAt: number }>();
+const loginAttemptLimit = 5;
+const loginAttemptWindowMs = 15 * 60 * 1000;
 
 app.use(express.json());
 // serverless-http may mount the catch-all segment without the `/api` prefix.
@@ -20,6 +23,19 @@ const setSessionCookie = (res: Response, token: string, maxAge: number) => {
   const secure = process.env.NODE_ENV === 'production' ? '; Secure' : '';
   res.setHeader('Set-Cookie', `kopikita_session=${token}; Path=/; HttpOnly; SameSite=Lax${secure}; Max-Age=${maxAge}`);
 };
+const loginAttemptKey = (email: unknown) => String(email).trim().toLowerCase();
+const rateLimitRetryAfter = (key: string, now = Date.now()) => {
+  const attempt = loginFailures.get(key);
+  if (!attempt) return 0;
+  if (attempt.resetAt <= now) { loginFailures.delete(key); return 0; }
+  return attempt.count >= loginAttemptLimit ? Math.ceil((attempt.resetAt - now) / 1000) : 0;
+};
+const recordFailedLogin = (key: string, now = Date.now()) => {
+  const attempt = loginFailures.get(key);
+  if (!attempt || attempt.resetAt <= now) return loginFailures.set(key, { count: 1, resetAt: now + loginAttemptWindowMs });
+  attempt.count += 1;
+};
+const clearFailedLogins = (key: string) => loginFailures.delete(key);
 const requireAdmin = async (req: Request, res: Response, next: () => void) => {
   const token = cookieValue(req, 'kopikita_session');
   if (!token || !sessionSecret) return res.status(401).json({ error: 'Unauthorized' });
@@ -30,10 +46,17 @@ const requireAdmin = async (req: Request, res: Response, next: () => void) => {
 app.post('/api/admin/login', async (req, res) => {
   const { email, password } = req.body ?? {};
   if (!email || !password) return bad(res, 'Email and password are required');
+  const attemptKey = loginAttemptKey(email);
+  const retryAfter = rateLimitRetryAfter(attemptKey);
+  if (retryAfter) {
+    res.setHeader('Retry-After', String(retryAfter));
+    return res.status(429).json({ error: 'Too many failed login attempts. Try again later.' });
+  }
   try {
     if (!sessionSecret) return res.status(500).json({ error: 'Session configuration is missing' });
     const result = await pool.query('SELECT id FROM admins WHERE email = $1 AND password_hash = crypt($2, password_hash)', [email, password]);
-    if (!result.rowCount) return res.status(401).json({ error: 'Invalid credentials' });
+    if (!result.rowCount) { recordFailedLogin(attemptKey); return res.status(401).json({ error: 'Invalid credentials' }); }
+    clearFailedLogins(attemptKey);
     const token = randomBytes(32).toString('hex');
     await pool.query('DELETE FROM sessions WHERE expires_at <= CURRENT_TIMESTAMP');
     await pool.query("INSERT INTO sessions (id, admin_id, expires_at) VALUES ($1, $2, CURRENT_TIMESTAMP + INTERVAL '7 days')", [sessionId(token), result.rows[0].id]);
