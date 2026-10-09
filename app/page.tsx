@@ -1,4 +1,5 @@
 import Link from "next/link";
+import LandingBookingCta from "@/components/landing-booking-cta";
 
 const favorites = [
   { name: "Cloudy Oat Latte", description: "Silky espresso, oat milk, brown sugar, and a little sea salt.", price: "Rp38.000", tone: "bg-[#e8c9a5]", icon: "latte" },
@@ -23,9 +24,7 @@ export default function Home() {
             <Link href="/menu" className="inline-flex min-h-14 w-full items-center justify-center rounded-full bg-[#4A2C2A] px-7 text-base font-extrabold text-[#fffaf2] shadow-[0_12px_24px_rgba(74,44,42,0.25)] ring-1 ring-[#4A2C2A] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#653a36] hover:shadow-[0_16px_28px_rgba(74,44,42,0.3)] active:translate-y-0 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#d86f3d] md:w-auto">
               See Menu <span aria-hidden="true" className="ml-2">→</span>
             </Link>
-            <Link href="/booking" className="inline-flex min-h-14 w-full items-center justify-center rounded-full border-2 border-[#4A2C2A] bg-[#fffaf2] px-7 text-base font-extrabold text-[#4A2C2A] shadow-[0_8px_18px_rgba(74,44,42,0.12)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#d86f3d] hover:text-[#a94d2d] active:translate-y-0 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#d86f3d] md:w-auto">
-              Book a Table
-            </Link>
+            <LandingBookingCta />
           </div>
         </div>
         <div className="relative min-w-0 aspect-[1.05] overflow-visible rounded-[2rem] bg-[#c9885b] shadow-[0_24px_55px_rgba(94,54,31,0.2)] md:min-h-[31rem] md:aspect-auto md:overflow-hidden" role="img" aria-label="Warm illustrated cafe scene with coffee cup, window light, and leafy plant"><span className="absolute inset-x-0 top-0 h-[48%] bg-[#f4c892]" /><span className="absolute right-[13%] top-0 h-[58%] w-[34%] rounded-b-[5rem] border-x-[13px] border-b-[13px] border-[#fff2d7]/75 bg-[#d59a64]" /><span className="absolute bottom-0 left-0 h-[48%] w-full bg-[#a56142]" /><span className="absolute bottom-[17%] left-[12%] h-[7%] w-[54%] rounded-full bg-[#70402c] shadow-[0_14px_0_9px_#875139]" /><span className="absolute bottom-[23%] left-[28%] h-[35%] w-[25%] rounded-b-[42%] rounded-t-[22%] border-[9px] border-[#fff4dc] bg-[#9e593d] shadow-[0_17px_15px_rgba(71,37,25,0.22)]" /><span className="absolute bottom-[50%] left-[34%] size-[14%] rounded-full border-[4px] border-[#fff4dc]/90 bg-[#d6a370]" /><span className="absolute bottom-[31%] left-[14%] h-[27%] w-[13%] rounded-t-[3rem] bg-[#4f754d]" /><div className="absolute bottom-5 right-5 rounded-2xl bg-[#fffaf2]/90 px-4 py-3 text-xs font-bold leading-5 text-[#4A2C2A] shadow-lg backdrop-blur-sm">08.00 — 22.00<br /><span className="text-[#a94d2d]">every day, take it slow</span></div></div>
