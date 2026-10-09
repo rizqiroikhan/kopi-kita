@@ -44,6 +44,11 @@ export function resumePostHog() {
   if (initialized && !isAdminPath()) posthog.opt_in_capturing();
 }
 
+export function capturePublicPageview() {
+  if (!initialized || isAdminPath()) return;
+  posthog.capture("$pageview");
+}
+
 export function captureAnalyticsEvent(event: "menu_viewed" | "booking_started" | "booking_submitted" | "cta_clicked", properties: Record<string, string | number | boolean>) {
   if (!initialized || isAdminPath()) return;
   posthog.capture(event, properties);
