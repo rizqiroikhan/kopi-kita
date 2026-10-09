@@ -79,6 +79,7 @@ jobs:
           target: http://localhost:3000
           allow_issue_writing: false
           fail_action: true
+          rules_file_name: .zap/rules.tsv
 
   quality:
     name: Lighthouse quality on Neon CI branch

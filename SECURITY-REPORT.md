@@ -25,6 +25,7 @@ Lighthouse reads only `NEON_CI_DATABASE_URL`, a GitHub secret that must point to
 | Known seeded admin password in production | A07 Authentication Failures | Open until operator confirms reset | Reset the production password to a unique value and revoke sessions. This action is intentionally not automated by CI. |
 | Five high findings in development lint tooling | A06 Vulnerable and Outdated Components | Accepted temporarily | `npm audit` has no critical finding. The only offered remediation downgrades the Next.js lint chain; details are in [security/npm-audit.md](security/npm-audit.md). |
 | Unauthenticated access to admin APIs | A01 Broken Access Control | Fixed | Local curl proof in [security/temuan-w2m4.md](security/temuan-w2m4.md) shows `401` for every protected admin route without a login cookie. |
+| Framework disclosure and missing embedder isolation | A02 Security Misconfiguration | Fixed | Autopilot PR disables `X-Powered-By` and sets `Cross-Origin-Embedder-Policy: require-corp`. |
 
 ## Proof of Fixes
 
@@ -34,7 +35,7 @@ Lighthouse reads only `NEON_CI_DATABASE_URL`, a GitHub secret that must point to
 
 ## Accepted Risk
 
-The login counter is intentionally in-memory for this small deployment and therefore is per server instance; adopt a shared store before treating it as an internet-scale rate limit. `unsafe-inline` remains in CSP for the current Next.js styling/runtime compatibility and is tracked as a CSP hardening follow-up. Development-only npm audit findings are accepted only while Dependabot and weekly Autopilot checks remain enabled.
+The login counter is intentionally in-memory for this small deployment and therefore is per server instance; adopt a shared store before treating it as an internet-scale rate limit. `unsafe-inline` remains in CSP for the current Next.js styling/runtime compatibility and is tracked as a CSP hardening follow-up. Dynamic and intentional 404 responses remain non-cacheable. Both ZAP accepted warnings have explicit reasons in `.zap/rules.tsv` and [security/temuan-w2m4.md](security/temuan-w2m4.md). Development-only npm audit findings are accepted only while Dependabot and weekly Autopilot checks remain enabled.
 
 ## Before / After Baseline
 
