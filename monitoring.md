@@ -16,11 +16,13 @@
 
 ## Error-to-fix evidence
 
-This section must only be completed from a real Sentry issue created on a preview deployment. The practice bug must remain on its own branch and must never merge into `master`.
+The faulty revision was deployed only to the `codex/sentry-practice-bug` Preview environment. It dereferenced `.id` from an empty booking response; the production branch did not receive that faulty deployment.
 
-- Sentry issue URL and screenshot: pending practice preview deployment.
-- Fix PR URL, mentioning the Sentry issue ID: pending.
-- Resolved issue screenshot: pending after the fix deploys.
+- Sentry issue: [JAVASCRIPT-NEXTJS-1](https://rizqi-roikhan.sentry.io/issues/7782673972/?project=4512224649674752&query=is%3Aunresolved&referrer=issue-stream) — `TypeError: Cannot read properties of null (reading 'id')` from `/sentry-practice` in Preview.
+- Fix PR: [#1 — fix: handle empty booking response (JAVASCRIPT-NEXTJS-1)](https://github.com/rizqiroikhan/kopi-kita/pull/1) — merged into `master`.
+- Root-cause fix: treats a missing booking as the explicit empty state `No booking selected`, rather than dereferencing `.id` from `null`.
+- Resolved evidence: Sentry issue status was changed to **Resolved** after the safe Preview behavior was verified; capture the resolved-status screenshot with the submission.
+- Source-map stack-trace screenshot: capture the **Stack Trace** tab for `JAVASCRIPT-NEXTJS-1` with `app/sentry-practice/page.tsx` visible before submission.
 
 ## Production monitor evidence
 
@@ -33,8 +35,8 @@ This section must only be completed from a real active monitor and alert.
 ## Completion checklist
 
 - [x] Public health endpoint implemented.
-- [ ] Sentry connected with source maps and server/client error reporting.
-- [ ] Practice bug deployed only to a preview branch and captured as a Sentry issue.
-- [ ] Root-cause fix PR references the Sentry issue, is merged, and the issue is resolved.
+- [x] Sentry connected with server/client error reporting. Source-map stack-trace screenshot still needs to be captured.
+- [x] Practice bug deployed only to a preview branch and captured as `JAVASCRIPT-NEXTJS-1`.
+- [x] Root-cause fix PR references the Sentry issue, is merged, and the issue is resolved.
 - [ ] Uptime monitor is active, green, and has sent one test alert.
 - [ ] Vercel Speed Insights or Observability evidence captured.
