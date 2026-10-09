@@ -16,7 +16,10 @@ const bad = (res: Response, message: string) => res.status(400).json({ error: me
 const parseId = (value: string | string[]) => typeof value === 'string' && /^\d+$/.test(value) ? Number(value) : null;
 const cookieValue = (req: Request, name: string) => req.header('cookie')?.split(';').map((part) => part.trim()).find((part) => part.startsWith(`${name}=`))?.slice(name.length + 1);
 const sessionId = (token: string) => createHash('sha256').update(`${sessionSecret ?? ''}:${token}`).digest('hex');
-const setSessionCookie = (res: Response, token: string, maxAge: number) => res.setHeader('Set-Cookie', `kopikita_session=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${maxAge}`);
+const setSessionCookie = (res: Response, token: string, maxAge: number) => {
+  const secure = process.env.NODE_ENV === 'production' ? '; Secure' : '';
+  res.setHeader('Set-Cookie', `kopikita_session=${token}; Path=/; HttpOnly; SameSite=Lax${secure}; Max-Age=${maxAge}`);
+};
 const requireAdmin = async (req: Request, res: Response, next: () => void) => {
   const token = cookieValue(req, 'kopikita_session');
   if (!token || !sessionSecret) return res.status(401).json({ error: 'Unauthorized' });
