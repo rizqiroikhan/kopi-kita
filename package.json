@@ -10,6 +10,7 @@
     "db:reset": "powershell -ExecutionPolicy Bypass -File api/db/apply-schema.ps1"
   },
   "dependencies": {
+    "@sentry/nextjs": "^11.6.0",
     "dotenv": "^18.0.5",
     "express": "^5.2.1",
     "next": "16.3.7",

@@ -42,3 +42,6 @@ MODULE_1_LEARNING.md
 *.tsbuildinfo
 next-env.d.ts
 .vercel
+
+# Sentry Config File
+.env.sentry-build-plugin
