@@ -18,7 +18,9 @@ export function initializePostHog() {
     autocapture: false,
     capture_pageview: false,
     capture_pageleave: false,
-    disable_session_recording: true,
+    // Record only public journeys. Text and HTML attributes remain masked;
+    // the provider stops capture entirely on /admin routes.
+    disable_session_recording: false,
     mask_all_text: true,
     mask_all_element_attributes: true,
     person_profiles: "identified_only",
