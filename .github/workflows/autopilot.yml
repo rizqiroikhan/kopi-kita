@@ -1,0 +1,103 @@
+name: Kopi Kita Autopilot
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+  schedule:
+    - cron: "17 3 * * 1"
+  workflow_dispatch:
+
+# This workflow can read source only. It never needs write, deployment, or cloud permissions.
+permissions:
+  contents: read
+
+jobs:
+  supply-chain:
+    name: Supply-chain checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Audit production dependencies (critical threshold)
+        run: npm audit --audit-level=critical
+      - name: Scan tracked history for secrets
+        uses: gitleaks/gitleaks-action@v3
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: Semgrep OWASP scan
+        run: |
+          python -m pip install --disable-pip-version-check semgrep
+          semgrep scan --config p/owasp-top-ten --error --exclude node_modules
+
+  zap-baseline:
+    name: ZAP baseline against local CI app
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: kopikita_ci
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d kopikita_ci"
+          --health-interval 10s --health-timeout 5s --health-retries 5
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/kopikita_ci
+      SESSION_SECRET: ci-only-session-${{ github.run_id }}
+      NODE_ENV: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Create local CI schema and seed data
+        run: |
+          PGPASSWORD=postgres psql -h localhost -U postgres -d kopikita_ci -f api/db/schema.sql
+          PGPASSWORD=postgres psql -h localhost -U postgres -d kopikita_ci -f api/db/seed.sql
+      - run: npm run build
+      - name: Start the app locally
+        run: |
+          npm run start -- --hostname 127.0.0.1 --port 3000 > next.log 2>&1 &
+          for attempt in {1..30}; do curl --fail --silent http://127.0.0.1:3000/api/health && exit 0; sleep 1; done
+          cat next.log
+          exit 1
+      - name: ZAP baseline (local target only)
+        uses: zaproxy/action-baseline@v0.15.0
+        with:
+          target: http://localhost:3000
+          allow_issue_writing: false
+          fail_action: true
+
+  quality:
+    name: Lighthouse quality on Neon CI branch
+    runs-on: ubuntu-latest
+    # This secret must be the connection string for the Neon child branch named `ci`.
+    # It is never production and is never printed by this workflow.
+    env:
+      DATABASE_URL: ${{ secrets.NEON_CI_DATABASE_URL }}
+      SESSION_SECRET: ci-only-session-${{ github.run_id }}
+      NODE_ENV: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Require a CI-only Neon database connection
+        run: test -n "$DATABASE_URL"
+      - run: npm run build
+      - name: Run Lighthouse CI for public journeys
+        run: npx --yes @lhci/cli@0.15.x autorun
