@@ -38,8 +38,6 @@ Use unique users and a seven-day conversion window. The primary conversion insig
 
 ## Week 2 Findings
 
-No recording findings are listed yet because PostHog had no recordings before session replay was enabled on 9 October 2026. After this change is deployed and real public sessions are recorded, add three evidence-based findings below, each with its PostHog recording link. Do not invent findings or recording URLs.
-
-1. Pending a real recording.
-2. Pending a real recording.
-3. Pending a real recording.
+1. A visitor opened the booking form and interacted with the name and contact fields, then left before submitting. The same session continued to the menu, where they browsed coffee and non-coffee items. This indicates that visitors can move from booking back to discovery without a completed request. [Watch recording](https://us.posthog.com/project/653083/replay/01a11f45-d8e6-71d7-835f-ad2c5c54fd23).
+2. A visitor browsed the menu, started a booking, and saw WhatsApp validation requiring at least 10 digits. After correcting the number, they submitted successfully and reached the booking confirmation. This confirms both validation feedback and recovery work in the observed journey. [Watch recording](https://us.posthog.com/project/653083/replay/01a11f44-53ae-72b3-8842-e3002a666b5c).
+3. A visitor reviewed menu items, navigated to booking, filled in the form and a note, then submitted successfully and reached the confirmation screen. This is an observed end-to-end path from menu discovery to completed booking. [Watch recording](https://us.posthog.com/project/653083/replay/01a11f42-da9e-7359-be07-4397ca7e9cd8).
