@@ -1,0 +1,2 @@
+10049	IGNORE	Dynamic responses and intentional 404s are not cached; they contain no authenticated or sensitive data.
+10055	IGNORE	Next.js currently requires unsafe-inline for its runtime/styling path; external script sources remain restricted by CSP.
