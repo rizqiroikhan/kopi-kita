@@ -7,7 +7,7 @@
 | Brute-force attempts against admin login are not rate limited | A07 Authentication Failures | An attacker repeatedly guesses the admin password. | This PR records failures per normalized email in a 15-minute in-memory window; the first five invalid attempts return `401`, then the next attempt returns `429` with `Retry-After`. A successful login clears that email's counter. | Fixed in this PR |
 | Seeded admin password must be replaced in the production database | A07 Authentication Failures | Anyone who knows the sample credential can attempt an admin login. | Change the production admin password to a unique value and remove/avoid the seed credential outside local development. | Open — operator action |
 | Protected admin endpoints must reject requests without a session | A01 Broken Access Control | An unauthenticated caller requests booking or product administration APIs. | `requireAdmin` guards product mutation and booking read/update routes. Local curl proof is recorded in this PR. | Fixed — verified locally |
-| Framework disclosure via `X-Powered-By`; missing cross-origin embedder isolation | A02 Security Misconfiguration | Response metadata reveals the framework or allows unreviewed cross-origin embedding behavior. | Disable Next.js `poweredByHeader` and send `Cross-Origin-Embedder-Policy: require-corp` on all routes. | Fixed in Autopilot PR |
+| Framework disclosure via `X-Powered-By`; missing cross-origin isolation headers | A02 Security Misconfiguration | Response metadata reveals the framework or allows unreviewed cross-origin resource behavior. | Disable Next.js `poweredByHeader` and send COOP, COEP, and CORP headers on all routes. | Fixed in Autopilot PR |
 
 ## Local curl proof: unauthenticated admin routes
 

@@ -25,7 +25,7 @@ Lighthouse reads only `NEON_CI_DATABASE_URL`, a GitHub secret that must point to
 | Known seeded admin password in production | A07 Authentication Failures | Open until operator confirms reset | Reset the production password to a unique value and revoke sessions. This action is intentionally not automated by CI. |
 | Five high findings in development lint tooling | A06 Vulnerable and Outdated Components | Accepted temporarily | `npm audit` has no critical finding. The only offered remediation downgrades the Next.js lint chain; details are in [security/npm-audit.md](security/npm-audit.md). |
 | Unauthenticated access to admin APIs | A01 Broken Access Control | Fixed | Local curl proof in [security/temuan-w2m4.md](security/temuan-w2m4.md) shows `401` for every protected admin route without a login cookie. |
-| Framework disclosure and missing embedder isolation | A02 Security Misconfiguration | Fixed | Autopilot PR disables `X-Powered-By` and sets `Cross-Origin-Embedder-Policy: require-corp`. |
+| Framework disclosure and missing cross-origin isolation | A02 Security Misconfiguration | Fixed | Autopilot PR disables `X-Powered-By` and sets COOP, COEP, and CORP headers. |
 
 ## Proof of Fixes
 
