@@ -5,12 +5,20 @@
 - Health endpoint: [https://kopi-kita-rust.vercel.app/api/health](https://kopi-kita-rust.vercel.app/api/health)
 - Expected response: `{"status":"ok"}`
 - The endpoint returns no database host, credentials, or other implementation details.
+- Verified after deployment: HTTP `200` with `{"status":"ok"}`.
+
+## Sentry setup
+
+- Sentry is initialized for the browser, Node.js server, and Edge runtime.
+- Client initialization keeps PostHog enabled from `instrumentation-client.ts`.
+- PII-heavy categories are disabled in the Sentry SDK configuration.
+- Source maps are configured for upload during the Vercel build. `SENTRY_AUTH_TOKEN` must be stored in Vercel environment variables and is intentionally excluded from Git.
 
 ## Error-to-fix evidence
 
 This section must only be completed from a real Sentry issue created on a preview deployment. The practice bug must remain on its own branch and must never merge into `master`.
 
-- Sentry issue URL and screenshot: pending Sentry project setup.
+- Sentry issue URL and screenshot: pending practice preview deployment.
 - Fix PR URL, mentioning the Sentry issue ID: pending.
 - Resolved issue screenshot: pending after the fix deploys.
 
