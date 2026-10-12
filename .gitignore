@@ -38,6 +38,7 @@ yarn-error.log*
 .vercel
 MODULE_1_LEARNING.md
 03Module1.md
+3Module2.md
 
 # typescript
 *.tsbuildinfo
