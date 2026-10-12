@@ -14,7 +14,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className="h-full antialiased"
     >
-      <body className="min-h-full bg-[#FAF3E0] font-sans text-[#4A2C2A]">
+      <body className="min-h-full bg-background font-sans text-foreground">
         <PostHogProvider>
           <SiteHeader />
           {children}
